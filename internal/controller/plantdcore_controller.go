@@ -404,6 +404,13 @@ func (r *PlantDCoreReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
+	serviceMonitor := plantdcore.SetupMetricsServiceMonitor(plantDCore)
+	if err := r.Create(ctx, serviceMonitor); err != nil && !errors.IsAlreadyExists(err) {
+		logger.Error(err, "error creating metrics-service-monitor resource")
+		return ctrl.Result{}, err
+	}
+	logger.Info("cAdvisor ServiceMonitor created")
+
 	// TODO: Deploy RedisStack
 
 	return ctrl.Result{RequeueAfter: time.Minute}, nil
