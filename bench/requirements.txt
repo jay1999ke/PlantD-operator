@@ -1,0 +1,6 @@
+fastapi
+opentelemetry-api
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-sdk
+uvicorn
+python-multipart

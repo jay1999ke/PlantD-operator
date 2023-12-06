@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bench-deployment
+  namespace: test-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bench
+  template:
+    metadata:
+      labels:
+        app: bench
+    spec:
+      containers:
+        - name: bench
+          image: docker.io/library/bench-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+          env:
+            - name: BASE_PATH
+              value: "/tmp"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "opentelemetrycollector:4317"
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bench-service
+  namespace: test-pipeline
+spec:
+  selector:
+    app: bench
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: NodePort
