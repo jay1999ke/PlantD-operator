@@ -398,18 +398,18 @@ func (r *PlantDCoreReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 	plantDCore.Status.PrometheusStatus = statusPrometheus
 
-	// Update status
-	if err := r.Status().Update(ctx, plantDCore); err != nil {
-		logger.Error(err, "failed to update PlantDCore status")
-		return ctrl.Result{}, err
-	}
-
 	serviceMonitor := plantdcore.SetupMetricsServiceMonitor(plantDCore)
 	if err := r.Create(ctx, serviceMonitor); err != nil && !errors.IsAlreadyExists(err) {
 		logger.Error(err, "error creating metrics-service-monitor resource")
 		return ctrl.Result{}, err
 	}
 	logger.Info("cAdvisor ServiceMonitor created")
+
+	// Update status
+	if err := r.Status().Update(ctx, plantDCore); err != nil {
+		logger.Error(err, "failed to update PlantDCore status")
+		return ctrl.Result{}, err
+	}
 
 	// TODO: Deploy RedisStack
 

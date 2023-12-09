@@ -192,7 +192,7 @@ func GetStudioResources(plantD *windtunnelv1alpha1.PlantDCore, proxyFQDN string)
 				{
 					Name:            studioContainer,
 					Image:           studioImage,
-					ImagePullPolicy: corev1.PullAlways,
+					ImagePullPolicy: corev1.PullNever,
 					Env: []corev1.EnvVar{
 						{
 							Name:  "KUBE_PROXY_URL",
