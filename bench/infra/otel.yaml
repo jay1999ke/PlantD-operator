@@ -21,7 +21,7 @@ data:
         verbosity: detailed
 
     connectors:
-      spanmetrics:
+      plantd:
 
     extensions:
       health_check:
@@ -32,9 +32,9 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [logging, spanmetrics]
+          exporters: [logging, plantd]
         metrics:
-          receivers: [spanmetrics]
+          receivers: [plantd]
           exporters: [prometheus]
 ---
 apiVersion: apps/v1
@@ -54,9 +54,8 @@ spec:
     spec:
       containers:
       - name: otelcol
-        args:
-        - --config=/conf/collector.yaml
-        image: otel/opentelemetry-collector-contrib
+        image: docker.io/library/plantdcollector:latest
+        imagePullPolicy: Never
         volumeMounts:
         - mountPath: /conf
           name: otel-collector-config

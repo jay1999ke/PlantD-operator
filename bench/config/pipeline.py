@@ -1,7 +1,6 @@
-from ast import main
 import os
-from time import sleep
 from typing import List
+from time import sleep, time
 from multiprocessing import Queue, Process
 
 from opentelemetry import trace
@@ -52,13 +51,25 @@ class StandardStage:
         self.out_queue = queue
 
     def task(self):
+        counter = 0
+        curr = time()
         while True:
             message = self.queue.get()
-            print("stage: ", self.index, " Message: ", message)
-            # with tracer.start_as_current_span(f'Stage{self.index}', kind=SpanKind.SERVER) as span:
-                # sleep(self.node.latency_ms)
-            if not self.isLast:
-                self.out_queue.put(message)
+            if counter % 1000 == 0:
+                print("stage: ", self.index, " completed ", counter, " requests in ", time() - curr ," secs.")
+                curr = time()
+                counter = 0
+            try:
+                with tracer.start_as_current_span(f'Stage{self.index}', kind=SpanKind.SERVER) as span:
+                    sleep(self.node.latency_ms)
+                    if not self.isLast:
+                        self.out_queue.put(message)
+                counter += 1
+            except Exception as ex:
+                print(ex)
+                import traceback
+                traceback.print_exc()
+
 
     def __repr__(self) -> str:
         return self.__str__()

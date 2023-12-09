@@ -12,7 +12,7 @@ app = FastAPI()
 
 sample = {
     "Type": "Standard",
-    "Latency": 10,
+    "Latency": 0,
     "FailRate": 0.01,
     "StageCount": 4
 }
@@ -30,7 +30,6 @@ async def upload(file: UploadFile = File(...)):
                     csv_data = zip_ref.read(file_info)
                     reader = csv.reader(csv_data.decode('utf-8').splitlines())
                     for row in reader:
-                        print(row)
                         test_pipeline.processRequest(row)
 
         return {"status": "Success!", "code": 200}
